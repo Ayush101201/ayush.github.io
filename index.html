@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ayush Nautiyal — UI/UX Designer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0A0A0A; --surface: #111111; --surface2: #181818;
+      --ink: #F2EFE9; --muted: #666360; --subtle: #222222;
+      --gold: #C8A96A; --gold-low: rgba(200,169,106,0.1);
+      --line: rgba(242,239,233,0.07);
+      --sans: 'Poppins', sans-serif; --serif: 'Playfair Display', Georgia, serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { background:var(--bg); color:var(--ink); font-family:var(--sans); overflow-x:hidden; cursor:none; }
+
+    /* PAGE TRANSITIONS */
+    .page { display:none; }
+    .page.active { display:block; animation:fadePageIn .4s ease forwards; }
+    @keyframes fadePageIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
+
+    /* CURSOR */
+    #cur { position:fixed;z-index:9999;width:10px;height:10px;background:var(--gold);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:width .3s,height .3s; }
+    #cur-ring { position:fixed;z-index:9998;width:38px;height:38px;border:1px solid rgba(200,169,106,0.38);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:width .4s cubic-bezier(.25,.46,.45,.94),height .4s; }
+
+    /* ─── PORTFOLIO ─── */
+    #portfolio-nav { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:30px 64px;transition:background .4s,padding .4s,border-color .4s;border-bottom:1px solid transparent; }
+    #portfolio-nav.scrolled { background:rgba(10,10,10,0.94);backdrop-filter:blur(20px);padding:18px 64px;border-color:var(--line); }
+    .nav-logo { font-family:var(--sans);font-size:15px;font-weight:600;letter-spacing:.04em;text-decoration:none;color:var(--ink);cursor:pointer;background:none;border:none;font-family:var(--sans); }
+    .nav-logo span { color:var(--gold); }
+    .nav-links { display:flex;gap:40px;list-style:none;align-items:center; }
+    .nav-links a { font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--muted);transition:color .25s;position:relative; }
+    .nav-links a::after { content:'';position:absolute;bottom:-3px;left:0;right:0;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:right;transition:transform .3s; }
+    .nav-links a:hover { color:var(--ink); }
+    .nav-links a:hover::after { transform:scaleX(1);transform-origin:left; }
+    .nav-hire { background:var(--gold)!important;color:var(--bg)!important;padding:9px 22px;font-weight:600!important; }
+    .nav-hire::after { display:none!important; }
+
+    #hero { min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:0 64px;gap:60px;position:relative;overflow:hidden; }
+    .hero-bg-grid { position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(242,239,233,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(242,239,233,0.025) 1px,transparent 1px);background-size:72px 72px; }
+    .hero-left { position:relative;z-index:1; }
+    .hero-avail { display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:36px;opacity:0;animation:fadeUp .7s ease .1s forwards; }
+    .avail-dot { width:7px;height:7px;border-radius:50%;background:#4ADE80;box-shadow:0 0 8px rgba(74,222,128,.7);animation:blink 2.2s ease infinite; }
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .hero-title { font-family:var(--serif);font-size:clamp(52px,6.5vw,108px);font-weight:400;line-height:.92;letter-spacing:-.02em;margin-bottom:32px;opacity:0;animation:fadeUp 1s ease .25s forwards; }
+    .hero-title .t1{display:block;color:var(--ink);} .hero-title .t2{display:block;font-style:italic;color:var(--gold);}
+    .hero-role { font-size:13px;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:28px;opacity:0;animation:fadeUp .8s ease .4s forwards; }
+    .hero-desc { font-size:15px;font-weight:300;color:#8A8784;line-height:1.8;max-width:420px;margin-bottom:44px;opacity:0;animation:fadeUp .8s ease .55s forwards; }
+    .hero-desc strong{color:var(--ink);font-weight:500;}
+    .hero-btns { display:flex;gap:16px;align-items:center;opacity:0;animation:fadeUp .8s ease .7s forwards; }
+    .btn-primary { font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--bg);background:var(--gold);padding:14px 32px;transition:opacity .25s;white-space:nowrap;cursor:pointer;border:none;text-decoration:none;display:inline-block; }
+    .btn-primary:hover{opacity:.85;}
+    .btn-sec { font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--subtle);padding:14px 28px;transition:border-color .25s,color .25s;cursor:pointer;background:transparent;text-decoration:none;display:inline-block; }
+    .btn-sec:hover{border-color:var(--muted);color:var(--ink);}
+    .hero-right { position:relative;z-index:1;height:580px;opacity:0;animation:fadeIn 1.2s ease .6s forwards; }
+    .img-frame { position:absolute;overflow:hidden;background:var(--surface2); }
+    .img-frame img { width:100%;height:100%;object-fit:cover;filter:grayscale(20%)brightness(0.9);transition:transform .6s ease; }
+    .img-frame:hover img{transform:scale(1.04);}
+    .frame-a{width:260px;height:340px;top:0;right:40px;border-radius:2px;}
+    .frame-b{width:200px;height:260px;bottom:0;right:200px;border-radius:2px;}
+    .frame-c{width:140px;height:140px;top:60px;right:240px;border-radius:2px;}
+    .img-tag{position:absolute;background:var(--gold);color:var(--bg);font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:5px 12px;bottom:-1px;left:0;}
+    .hero-stat{position:absolute;bottom:40px;left:0;display:flex;gap:40px;}
+    .stat-item{display:flex;flex-direction:column;}
+    .stat-num{font-family:var(--serif);font-size:36px;font-weight:400;color:var(--gold);line-height:1;}
+    .stat-label{font-size:10px;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+    .hero-scroll{position:absolute;bottom:40px;left:64px;z-index:1;display:flex;align-items:center;gap:14px;opacity:0;animation:fadeIn 1s ease 1.4s forwards;}
+    .s-bar{width:1px;height:44px;background:var(--line);position:relative;overflow:hidden;}
+    .s-bar::after{content:'';position:absolute;top:-100%;left:0;right:0;height:100%;background:var(--gold);animation:drop 2.2s ease infinite;}
+    @keyframes drop{0%{top:-100%}100%{top:100%}}
+    .s-lbl{font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);writing-mode:vertical-lr;transform:rotate(180deg);}
+
+    .mq-wrap{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:16px 0;overflow:hidden;background:var(--surface);}
+    .mq-track{display:flex;width:max-content;animation:mq 32s linear infinite;}
+    .mq-track:hover{animation-play-state:paused;}
+    @keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+    .mq-item{display:flex;align-items:center;gap:24px;padding:0 40px;white-space:nowrap;font-size:10px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);}
+    .mq-dot{width:3px;height:3px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+
+    .sw{max-width:1260px;margin:0 auto;padding:110px 64px;}
+    .sdiv{border:none;border-top:1px solid var(--line);margin:0 64px;}
+    .ey{display:flex;align-items:center;gap:14px;font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;}
+    .ey::before{content:'';display:block;width:24px;height:1px;background:var(--gold);}
+    .st{font-family:var(--serif);font-size:clamp(36px,4.5vw,64px);font-weight:400;line-height:1.05;letter-spacing:-.01em;margin-bottom:64px;}
+    .st em{font-style:italic;color:var(--gold);}
+
+    .wh{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:64px;}
+    .wc{font-size:11px;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+    .prow{display:grid;grid-template-columns:56px 1fr 200px 56px;align-items:center;gap:36px;padding:36px 0;border-top:1px solid var(--line);color:inherit;position:relative;overflow:hidden;transition:padding-left .35s cubic-bezier(.25,.46,.45,.94);cursor:pointer;text-decoration:none;}
+    .prow:last-child{border-bottom:1px solid var(--line);}
+    .prow::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--gold-low) 0%,transparent 65%);transform:translateX(-100%);transition:transform .5s cubic-bezier(.25,.46,.45,.94);}
+    .prow:hover{padding-left:20px;}
+    .prow:hover::before{transform:translateX(0);}
+    .pnum{font-family:var(--serif);font-size:13px;font-style:italic;color:var(--muted);position:relative;z-index:1;transition:color .3s;}
+    .prow:hover .pnum{color:var(--gold);}
+    .pinfo{position:relative;z-index:1;}
+    .ptitle{font-family:var(--serif);font-size:clamp(22px,2.5vw,34px);font-weight:400;letter-spacing:-.01em;margin-bottom:5px;line-height:1.1;}
+    .psub{font-size:11px;font-weight:400;color:var(--muted);letter-spacing:.05em;}
+    .ptags{display:flex;gap:8px;flex-wrap:wrap;position:relative;z-index:1;}
+    .ptag{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--subtle);padding:5px 11px;transition:border-color .3s,color .3s;}
+    .prow:hover .ptag{border-color:rgba(200,169,106,.35);color:var(--gold);}
+    .parrow{font-size:20px;color:var(--muted);position:relative;z-index:1;transition:transform .3s,color .3s;text-align:right;}
+    .prow:hover .parrow{transform:translate(5px,-5px);color:var(--gold);}
+    .prow.dim{opacity:.22;pointer-events:none;}
+
+    .ag{display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:start;}
+    .about-img-wrap{position:relative;height:500px;}
+    .ab-img{position:absolute;overflow:hidden;background:var(--surface2);}
+    .ab-img img{width:100%;height:100%;object-fit:cover;filter:grayscale(15%)brightness(0.88);}
+    .ab-main{width:100%;height:380px;top:0;left:0;border-radius:2px;}
+    .ab-accent{width:200px;height:200px;bottom:0;right:0;border-radius:2px;border:3px solid var(--bg);}
+    .ab-label{position:absolute;top:24px;left:24px;background:var(--gold);color:var(--bg);font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:5px 12px;}
+    .at p{font-size:15px;font-weight:300;color:#7A7774;line-height:1.9;margin-bottom:22px;}
+    .at p strong{color:var(--ink);font-weight:500;}
+    .skh{font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:40px 0 24px;display:flex;align-items:center;gap:14px;}
+    .skh::before{content:'';display:block;width:20px;height:1px;background:var(--gold);}
+    .sk{display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-bottom:1px solid var(--line);}
+    .sk:first-of-type{border-top:1px solid var(--line);}
+    .sk-n{font-size:15px;font-weight:400;color:var(--ink);}
+    .sk-b{width:72px;height:2px;background:var(--subtle);}
+    .sk-f{height:100%;background:var(--gold);}
+    .sk-l{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+
+    #contact{padding:130px 64px;text-align:center;position:relative;overflow:hidden;}
+    .cg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 70% 55% at 50% 100%,rgba(200,169,106,0.07) 0%,transparent 70%);pointer-events:none;}
+    .ci{position:relative;z-index:1;}
+    .ctt{font-family:var(--serif);font-size:clamp(48px,7.5vw,110px);font-weight:400;line-height:.93;letter-spacing:-.02em;margin-bottom:56px;}
+    .ctt em{font-style:italic;color:var(--gold);}
+    .ctt .out{color:transparent;-webkit-text-stroke:1px rgba(242,239,233,.14);}
+    .cls{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;}
+    .cl{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;color:var(--muted);position:relative;padding-bottom:5px;transition:color .25s;}
+    .cl::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--gold);transform:scaleX(0);transition:transform .3s;}
+    .cl:hover{color:var(--gold);}
+    .cl:hover::after{transform:scaleX(1);}
+    .email-cl::after{display:none!important;}
+    .email-cl{color:var(--gold)!important;}
+    .email-cl:hover{color:var(--gold)!important;}
+    footer{padding:26px 64px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;background:var(--surface);}
+    .fl{font-family:var(--serif);font-size:15px;color:var(--muted);}
+    .fl span{color:var(--gold);font-style:italic;}
+    .fr{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+    /* ─── CASE STUDY ─── */
+    #cs-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:28px 64px;background:rgba(10,10,10,0.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--line);}
+    .nav-back{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;transition:color .25s;cursor:pointer;background:none;border:none;font-family:var(--sans);}
+    .nav-back:hover{color:var(--gold);}
+    .cs-hero{padding:140px 64px 100px;max-width:1260px;margin:0 auto;border-bottom:1px solid var(--line);}
+    .cs-eyebrow{display:flex;align-items:center;gap:14px;font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:28px;}
+    .cs-eyebrow::before{content:'';display:block;width:24px;height:1px;background:var(--gold);}
+    .cs-hero-grid{display:grid;grid-template-columns:1fr auto;align-items:end;gap:60px;}
+    .cs-title{font-family:var(--serif);font-size:clamp(56px,7vw,112px);font-weight:400;line-height:.92;letter-spacing:-.02em;}
+    .cs-title em{font-style:italic;color:var(--gold);}
+    .cs-meta-block{display:flex;flex-direction:column;gap:28px;min-width:220px;}
+    .cm-label{font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+    .cm-val{font-size:14px;font-weight:400;color:var(--ink);}
+    .cs-cover{max-width:1260px;margin:0 auto;padding:0 64px;margin-bottom:64px;}
+    .cover-img-wrap{position:relative;width:100%;height:400px;background:var(--surface2);overflow:hidden;border-radius:2px;}
+    .cover-img-wrap img{width:100%;height:100%;object-fit:cover;filter:grayscale(20%)brightness(0.85);}
+    .cover-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,10,0.7) 0%,transparent 60%);}
+    .cover-caption{position:absolute;bottom:0;left:0;background:var(--gold);color:var(--bg);font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:8px 16px;}
+    .cs-s{max-width:1260px;margin:0 auto;padding:96px 64px;border-bottom:1px solid var(--line);}
+    .two{display:grid;grid-template-columns:1.2fr 1fr;gap:80px;align-items:start;}
+    .body-text{font-size:15px;font-weight:300;color:#7A7774;line-height:1.9;}
+    .body-text strong{color:var(--ink);font-weight:500;}
+    .hl-box{background:var(--surface2);border-left:2px solid var(--gold);padding:28px 32px;margin-top:32px;}
+    .hl-label{font-size:9px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;}
+    .hl-text{font-family:var(--serif);font-size:20px;font-weight:400;font-style:italic;line-height:1.5;color:var(--ink);}
+    .prob-list{list-style:none;margin-top:12px;}
+    .prob-item{display:grid;grid-template-columns:48px 1fr;gap:24px;padding:28px 0;border-top:1px solid var(--line);align-items:start;}
+    .prob-item:last-child{border-bottom:1px solid var(--line);}
+    .prob-num{font-family:var(--serif);font-size:13px;font-style:italic;color:var(--muted);padding-top:3px;}
+    .prob-content h4{font-size:16px;font-weight:600;margin-bottom:8px;color:var(--ink);}
+    .prob-content p{font-size:13px;font-weight:300;color:#7A7774;line-height:1.75;}
+    .dec-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:48px;}
+    .dec-card{background:var(--surface);padding:32px 28px;transition:background .25s;}
+    .dec-card:hover{background:var(--surface2);}
+    .dec-tag{font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+    .dec-title{font-family:var(--serif);font-size:22px;font-weight:400;margin-bottom:12px;color:var(--ink);}
+    .dec-body{font-size:12px;font-weight:300;line-height:1.8;color:#7A7774;}
+    .figma-wrap{margin-top:48px;border:1px solid var(--line);overflow:hidden;background:var(--surface2);}
+    .figma-wrap { position:relative; }
+    .figma-wrap::after { content:''; position:absolute; inset:0; z-index:1; pointer-events:none; }
+    .figma-wrap:hover::after { pointer-events:none; }
+    .figma-wrap iframe{display:block;width:100%;height:680px;border:none;}
+    .figma-placeholder { width:100%;height:680px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;cursor:pointer;background:var(--surface2);transition:background .25s; }
+    .figma-placeholder:hover { background:#1e1e1e; }
+    .figma-play-label { font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted); }
+    .figma-fallback{margin-top:14px;font-size:11px;font-weight:400;letter-spacing:.06em;color:var(--muted);}
+    .figma-fallback a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(200,169,106,.3);}
+    .ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:48px;}
+    .ba-label{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+    .ba-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);}
+    .ba-dot.g{background:var(--gold);}
+    .ba-box{background:var(--surface);padding:28px;}
+    .ba-item{font-size:14px;font-weight:300;padding:11px 0;border-bottom:1px solid var(--line);color:#7A7774;}
+    .ba-item:last-child{border-bottom:none;}
+    .ba-item.s{text-decoration:line-through;color:var(--muted);}
+    .ba-item.a{color:var(--ink);}
+    .ba-item.a::before{content:'+ ';font-size:11px;font-weight:600;color:var(--gold);}
+    .out-row{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:48px;}
+    .out-card{background:var(--surface);padding:40px 32px;border-top:2px solid var(--gold);}
+    .out-num{font-family:var(--serif);font-size:56px;font-weight:400;line-height:1;color:var(--gold);margin-bottom:12px;}
+    .out-lbl{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+    .out-desc{font-size:13px;font-weight:300;line-height:1.7;color:#7A7774;}
+    .learn-list{list-style:none;margin-top:12px;}
+    .learn-item{display:grid;grid-template-columns:32px 1fr;gap:20px;padding:22px 0;border-top:1px solid var(--line);}
+    .learn-item:last-child{border-bottom:1px solid var(--line);}
+    .learn-num{font-family:var(--serif);font-size:13px;font-style:italic;color:var(--muted);padding-top:2px;}
+    .learn-text{font-size:16px;font-weight:300;line-height:1.7;color:#9A9794;}
+    .learn-text strong{color:var(--ink);font-weight:500;}
+    .cs-cta{text-align:center;padding:120px 64px;position:relative;overflow:hidden;}
+    .cta-glow{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 70% 55% at 50% 100%,rgba(200,169,106,0.06) 0%,transparent 70%);pointer-events:none;}
+    .cta-inner{position:relative;z-index:1;}
+    .cta-title{font-family:var(--serif);font-size:clamp(44px,6vw,88px);font-weight:400;line-height:.95;letter-spacing:-.02em;margin-bottom:48px;}
+    .cta-title em{font-style:italic;color:var(--gold);}
+    .cta-title .out{color:transparent;-webkit-text-stroke:1px rgba(242,239,233,.14);}
+
+    /* RESPONSIVE */
+    @media(max-width:1000px){
+      #hero{grid-template-columns:1fr;padding-top:140px;padding-bottom:80px;min-height:auto;}
+      .hero-right,.hero-scroll{display:none;}
+      .ag{grid-template-columns:1fr;gap:60px;}
+      .about-img-wrap{height:300px;}
+      #portfolio-nav,.sw,#contact,footer,#cs-nav,.cs-hero,.cs-cover,.cs-s,.cs-cta{padding-left:28px;padding-right:28px;}
+      #portfolio-nav.scrolled{padding-left:28px;padding-right:28px;}
+      .sdiv{margin:0 28px;}
+      .prow{grid-template-columns:40px 1fr;}
+      .ptags,.parrow{display:none;}
+      .nav-links{display:none;}
+      .cs-hero-grid{grid-template-columns:1fr;}
+      .two{grid-template-columns:1fr;gap:40px;}
+      .dec-grid,.ba-grid,.out-row{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- ══════════ PORTFOLIO ══════════ -->
+<div id="page-portfolio" class="page active">
+
+<nav id="portfolio-nav">
+  <button class="nav-logo" onclick="showPage('portfolio')">Ayush <span>N.</span></button>
+  <ul class="nav-links">
+    <li><a href="#" onclick="event.preventDefault();showPage('portfolio','work')">Work</a></li>
+    <li><a href="#" onclick="event.preventDefault();showPage('portfolio','about')">About</a></li>
+    <li><a href="#" class="nav-hire" onclick="event.preventDefault();showPage('portfolio','contact')">Hire Me</a></li>
+  </ul>
+</nav>
+
+<section id="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-left">
+    <div class="hero-avail"><span class="avail-dot"></span>Available for work</div>
+    <h1 class="hero-title"><span class="t1">Ayush</span><span class="t2">Nautiyal</span></h1>
+    <p class="hero-role">UI / UX Designer</p>
+    <p class="hero-desc">Crafting <strong>intentional digital experiences</strong> — where clarity meets craft and every pixel earns its place.</p>
+    <div class="hero-btns">
+      <a href="#" class="btn-primary" onclick="event.preventDefault();showPage('portfolio','work')">View My Work</a>
+      <a href="#" class="btn-sec" onclick="event.preventDefault();showPage('portfolio','contact')">Get in Touch</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="img-frame frame-a">
+      <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&q=80" alt="Design workspace" />
+      <span class="img-tag">UI/UX</span>
+    </div>
+    <div class="img-frame frame-c">
+      <img src="https://images.unsplash.com/photo-1587440871875-191322ee64b0?w=400&q=80" alt="Design tools" />
+    </div>
+    <div class="img-frame frame-b">
+      <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=500&q=80" alt="Product design" />
+    </div>
+    <div class="hero-stat">
+    </div>
+  </div>
+  <div class="hero-scroll"><div class="s-bar"></div><span class="s-lbl">Scroll</span></div>
+</section>
+
+<div class="mq-wrap">
+  <div class="mq-track">
+    <div class="mq-item"><span class="mq-dot"></span>UI Design<span class="mq-dot"></span>UX Research<span class="mq-dot"></span>Interaction Design<span class="mq-dot"></span>Figma<span class="mq-dot"></span>Framer<span class="mq-dot"></span>Prototyping<span class="mq-dot"></span>Design Systems<span class="mq-dot"></span>E-commerce<span class="mq-dot"></span>Accessibility<span class="mq-dot"></span>CRO</div>
+    <div class="mq-item"><span class="mq-dot"></span>UI Design<span class="mq-dot"></span>UX Research<span class="mq-dot"></span>Interaction Design<span class="mq-dot"></span>Figma<span class="mq-dot"></span>Framer<span class="mq-dot"></span>Prototyping<span class="mq-dot"></span>Design Systems<span class="mq-dot"></span>E-commerce<span class="mq-dot"></span>Accessibility<span class="mq-dot"></span>CRO</div>
+  </div>
+</div>
+
+<div class="sw" id="work">
+  <div class="wh">
+    <div><div class="ey">Selected Work</div><h2 class="st">Projects that<br><em>matter.</em></h2></div>
+    <span class="wc">03 Projects</span>
+  </div>
+  <div>
+    <div class="prow" onclick="showPage('aws')">
+      <span class="pnum">01</span>
+      <div class="pinfo"><h3 class="ptitle">AWS Landing Page</h3><p class="psub">Enterprise UX Redesign · Heuristic Audit · Competitive Analysis</p></div>
+      <div class="ptags"><span class="ptag">UX Audit</span><span class="ptag">UI Design</span><span class="ptag">CRO</span></div>
+      <span class="parrow">↗</span>
+    </div>
+    <div class="prow" onclick="showPage('casestudy')">
+      <span class="pnum">02</span>
+      <div class="pinfo"><h3 class="ptitle">Jones Road Beauty</h3><p class="psub">E-commerce Homepage Redesign · Conversion Optimisation</p></div>
+      <div class="ptags"><span class="ptag">UX Research</span><span class="ptag">UI Design</span><span class="ptag">CRO</span></div>
+      <span class="parrow">↗</span>
+    </div>
+    <div class="prow" onclick="showPage('huzz')">
+      <span class="pnum">03</span>
+      <div class="pinfo"><h3 class="ptitle">HUZZ</h3><p class="psub">Dating App Design · User Onboarding · Safety Features</p></div>
+      <div class="ptags"><span class="ptag">UI/UX Design</span><span class="ptag">Product Design</span><span class="ptag">Mobile</span></div>
+      <span class="parrow">↗</span>
+    </div>
+  </div>
+</div>
+
+<hr class="sdiv" />
+
+<div class="sw" id="about">
+  <div class="ag">
+    <div class="about-img-wrap">
+      <div class="ab-img ab-main">
+        <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&q=80" alt="Ayush Nautiyal" />
+        <span class="ab-label">UI / UX Designer</span>
+      </div>
+      <div class="ab-img ab-accent">
+        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&q=80" alt="Ayush Nautiyal" />
+      </div>
+    </div>
+    <div>
+      <div class="ey">About Me</div>
+      <h2 class="st">Design is<br>thinking made<br><em>visible.</em></h2>
+      <div class="at">
+        <p>I'm Ayush — a UI/UX designer who believes great design is <strong>invisible</strong>. It doesn't demand attention; it simply works, feels right, and guides people effortlessly.</p>
+        <p>My work sits at the intersection of <strong>visual craft and user psychology</strong>. I design interfaces that are clear, accessible, and conversion-focused — without sacrificing the aesthetic quality a brand deserves.</p>
+        <p>Currently open to <strong>freelance projects</strong> and <strong>full-time opportunities</strong>.</p>
+      </div>
+      <p class="skh">Disciplines</p>
+      <div class="sk"><span class="sk-n">UI Design</span><div class="sk-b"><div class="sk-f" style="width:95%"></div></div><span class="sk-l">Core</span></div>
+      <div class="sk"><span class="sk-n">UX Research</span><div class="sk-b"><div class="sk-f" style="width:88%"></div></div><span class="sk-l">Core</span></div>
+      <div class="sk"><span class="sk-n">Interaction Design</span><div class="sk-b"><div class="sk-f" style="width:85%"></div></div><span class="sk-l">Core</span></div>
+      <div class="sk"><span class="sk-n">Figma / Framer</span><div class="sk-b"><div class="sk-f" style="width:92%"></div></div><span class="sk-l">Tools</span></div>
+      <div class="sk"><span class="sk-n">Design Systems</span><div class="sk-b"><div class="sk-f" style="width:78%"></div></div><span class="sk-l">Supporting</span></div>
+    </div>
+  </div>
+</div>
+
+<hr class="sdiv" />
+
+<section id="contact">
+  <div class="cg"></div>
+  <div class="ci">
+    <div class="ey" style="justify-content:center;margin-bottom:32px;">Get in Touch</div>
+    <h2 class="ctt">Let's build<br>something <em>great</em><br><span class="out">together.</span></h2>
+    <div class="cls">
+      <span class="cl email-cl" style="cursor:default;text-transform:none;display:inline-flex;align-items:center;gap:8px;"><svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="0.5" y="0.5" width="19" height="15" rx="1.5" stroke="#C8A96A" stroke-opacity="0.4" fill="#C8A96A" fill-opacity="0.06"/><path d="M1 1.5L10 9L19 1.5" stroke="#C8A96A" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>ayush.nautiyal@email.com</span>
+      <a href="https://www.linkedin.com/in/ayush-nautiyal-22995a124/" target="_blank" class="cl">LinkedIn</a>
+      <a href="Ayush_Nautiyal_Resume.pdf" target="_blank" class="cl">Resume</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="fl">Ayush <span>Nautiyal</span></span>
+  <span class="fr">© 2026 · UI/UX Designer</span>
+</footer>
+</div><!-- end portfolio -->
+
+
+<!-- ══════════ CASE STUDY ══════════ -->
+<div id="page-casestudy" class="page">
+
+<nav id="cs-nav">
+  <button class="nav-logo" onclick="showPage('portfolio')">Ayush <span>N.</span></button>
+  <button class="nav-back" onclick="showPage('portfolio','work')">← Back to Work</button>
+</nav>
+
+<div class="cs-hero">
+  <div class="cs-eyebrow">Case Study · 02 · E-commerce Redesign</div>
+  <div class="cs-hero-grid">
+    <h1 class="cs-title">Jones Road<br><em>Beauty</em></h1>
+    <div class="cs-meta-block">
+      <div class="cm"><p class="cm-label">Role</p><p class="cm-val">UI/UX Designer</p></div>
+      <div class="cm"><p class="cm-label">Type</p><p class="cm-val">Homepage Redesign</p></div>
+      <div class="cm"><p class="cm-label">Focus</p><p class="cm-val">CRO · Accessibility</p></div>
+      <div class="cm"><p class="cm-label">Tool</p><p class="cm-val">Figma</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="cs-cover">
+  <div class="cover-img-wrap">
+    <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=1400&q=80" alt="Jones Road Beauty" />
+    <div class="cover-overlay"></div>
+    <span class="cover-caption">Jones Road Beauty · Homepage Redesign · 2025</span>
+  </div>
+</div>
+
+<div class="cs-s">
+  <div class="two">
+    <div>
+      <div class="ey">Overview</div>
+      <h2 class="st">A brand that deserved<br>a better <em>first impression.</em></h2>
+      <p class="body-text">Jones Road Beauty is a clean, high-performance cosmetics brand founded by Bobbi Brown. Despite a strong product lineup and loyal customer base, the homepage suffered from usability issues quietly costing conversions — poor visual hierarchy, accessibility gaps, and a layout working against natural scanning patterns.</p>
+      <p class="body-text" style="margin-top:16px">This project was a hiring test assignment: analyze the existing homepage, identify friction points, and redesign it to better reflect the brand's quality and improve the user experience end-to-end.</p>
+    </div>
+    <div>
+      <div class="hl-box">
+        <p class="hl-label">Primary Goal</p>
+        <p class="hl-text">"Increase conversion rate by improving clarity, hierarchy, and trust across the homepage."</p>
+      </div>
+      <div style="margin-top:24px;background:var(--surface);padding:24px 28px;">
+        <p class="hl-label" style="margin-bottom:16px;">Scope</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;font-size:13px;font-weight:300;color:#7A7774;">Heuristic Audit <span style="color:var(--gold);font-weight:500;">✓</span></div>
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;font-size:13px;font-weight:300;color:#7A7774;">Homepage Redesign <span style="color:var(--gold);font-weight:500;">✓</span></div>
+          <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;font-size:13px;font-weight:300;color:#7A7774;">Design Annotations <span style="color:var(--gold);font-weight:500;">✓</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:300;color:#7A7774;">Decision Documentation <span style="color:var(--gold);font-weight:500;">✓</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cs-s">
+  <div class="ey">Research & Analysis</div>
+  <h2 class="st">What was<br><em>broken.</em></h2>
+  <p class="body-text" style="max-width:660px">I audited every section of the original homepage against usability heuristics, accessibility standards (WCAG), and e-commerce conversion best practices.</p>
+  <ul class="prob-list">
+    <li class="prob-item"><span class="prob-num">01</span><div class="prob-content"><h4>Offer Strip Ignored</h4><p>Placed at the very top in a low-contrast bar, the free shipping offer sat outside users' natural scanning zones — consistently overlooked.</p></div></li>
+    <li class="prob-item"><span class="prob-num">02</span><div class="prob-content"><h4>Non-Standard Bag Icon</h4><p>The cart icon used a non-standard visual metaphor, violating the recognition over recall heuristic. Users struggled to identify it at a critical conversion touchpoint.</p></div></li>
+    <li class="prob-item"><span class="prob-num">03</span><div class="prob-content"><h4>Featured Products — No Visual Separation</h4><p>All products displayed on the same flat background without boundaries. Poor spacing caused misclicks and made individual products hard to distinguish.</p></div></li>
+    <li class="prob-item"><span class="prob-num">04</span><div class="prob-content"><h4>Shop by Collection — Accessibility Gaps</h4><p>Small font sizes reduced readability. Zero spacing between images disrupted eye movement and increased cognitive load.</p></div></li>
+    <li class="prob-item"><span class="prob-num">05</span><div class="prob-content"><h4>Missing Context & Weak CTAs</h4><p>Multiple sections lacked clear headings. CTAs were small, low-contrast, and easy to miss — failing to guide users toward the next action.</p></div></li>
+    <li class="prob-item"><span class="prob-num">06</span><div class="prob-content"><h4>Footer Hierarchy Collapse</h4><p>All footer elements carried equal visual weight. Poor contrast and inconsistent typography reduced both readability and brand consistency.</p></div></li>
+  </ul>
+</div>
+
+<div class="cs-s">
+  <div class="ey">The Design</div>
+  <h2 class="st">Explore the full <em>redesign.</em></h2>
+  <p class="body-text" style="max-width:660px">Browse through the annotated Figma file below — including the original design, redesigned homepage, and all decision notes side by side.</p>
+  <div class="figma-wrap figma-lazy" id="figma-jones">
+    <div class="figma-placeholder" onclick="loadFigma('figma-jones','https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fdesign%2FTzUvO5iF0oewNSmvhOvDpC%2FEcom-redesign%3Fnode-id%3D0-1%26t%3DptcwWX5lCSK1W7G0-1')">
+      <div class="figma-play"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="#C8A96A" stroke-width="1.5"/><path d="M10 8.5L16 12L10 15.5V8.5Z" fill="#C8A96A"/></svg></div>
+      <p class="figma-play-label">Click to load Figma prototype</p>
+    </div>
+  </div>
+  <p class="figma-fallback">Prefer to open directly? <a href="https://www.figma.com/design/TzUvO5iF0oewNSmvhOvDpC/Ecom-redesign?node-id=0-1&t=ptcwWX5lCSK1W7G0-1" target="_blank">Open in Figma →</a></p>
+</div>
+
+<div class="cs-s">
+  <div class="ey">Design Decisions</div>
+  <h2 class="st">Every change had<br>a <em>reason.</em></h2>
+  <p class="body-text" style="max-width:660px">The redesign wasn't about making things look nicer — it was about solving real usability problems with deliberate, documented decisions.</p>
+  <div class="dec-grid">
+    <div class="dec-card"><p class="dec-tag">Navigation</p><h3 class="dec-title">Standard Cart Icon</h3><p class="dec-body">Replaced the ambiguous bag icon with the universally recognized shopping cart symbol, aligning with users' mental models and reducing confusion at a key conversion touchpoint.</p></div>
+    <div class="dec-card"><p class="dec-tag">Offer Strip</p><h3 class="dec-title">Repositioned Below Hero</h3><p class="dec-body">Moved the free shipping offer below the hero image to sit within users' natural scanning path, with updated color and contrast for better visibility.</p></div>
+    <div class="dec-card"><p class="dec-tag">Information Architecture</p><h3 class="dec-title">Categories Surfaced Early</h3><p class="dec-body">Repositioned Shop by Category higher on the page with a card-based layout. Clear boundaries and labels reduce cognitive load and support faster discovery.</p></div>
+    <div class="dec-card"><p class="dec-tag">Product Discovery</p><h3 class="dec-title">Tabbed Product Navigation</h3><p class="dec-body">Introduced a tabbed component (Makeup / Skincare / Haircare) to organize featured products. Hover-state add-to-cart reduces clicks and streamlines the path to purchase.</p></div>
+    <div class="dec-card"><p class="dec-tag">Social Proof</p><h3 class="dec-title">New Reviews Section</h3><p class="dec-body">Added a dedicated customer reviews section. Real user voices build credibility, validate purchasing decisions, and create a sense of community.</p></div>
+    <div class="dec-card"><p class="dec-tag">Trust Signals</p><h3 class="dec-title">Secure Payments · Easy Returns</h3><p class="dec-body">Three trust badges placed strategically near the bottom reduce purchase hesitation at the exact point users decide whether to buy.</p></div>
+    <div class="dec-card"><p class="dec-tag">Engagement</p><h3 class="dec-title">Products in Action (Video)</h3><p class="dec-body">A new video section shows real people using the products, building trust through authentic visual proof and strengthening emotional connection with the brand.</p></div>
+    <div class="dec-card"><p class="dec-tag">Accessibility</p><h3 class="dec-title">Headings + Font Sizes</h3><p class="dec-body">Clear descriptive headings and larger, higher-contrast text across all sections. Every section now has an orientation cue, meeting WCAG readability standards.</p></div>
+  </div>
+</div>
+
+<div class="cs-s">
+  <div class="ey">Before → After</div>
+  <h2 class="st">The <em>delta.</em></h2>
+  <div class="ba-grid">
+    <div>
+      <div class="ba-label"><span class="ba-dot"></span>Original Design</div>
+      <div class="ba-box">
+        <div class="ba-item s">Non-standard bag icon</div>
+        <div class="ba-item s">Offer strip above fold, low contrast</div>
+        <div class="ba-item s">No section headings or subtext</div>
+        <div class="ba-item s">Products on flat, undifferentiated background</div>
+        <div class="ba-item s">No customer reviews</div>
+        <div class="ba-item s">No trust badges</div>
+        <div class="ba-item s">Images dominate "Get the Look"</div>
+        <div class="ba-item s">Footer lacks visual hierarchy</div>
+      </div>
+    </div>
+    <div>
+      <div class="ba-label"><span class="ba-dot g"></span>Redesigned</div>
+      <div class="ba-box">
+        <div class="ba-item a">Universal shopping cart icon</div>
+        <div class="ba-item a">Offer strip repositioned below hero</div>
+        <div class="ba-item a">Clear headings + subtext on every section</div>
+        <div class="ba-item a">Card-based products with clear separation</div>
+        <div class="ba-item a">Dedicated customer reviews section</div>
+        <div class="ba-item a">3 trust signal badges near footer</div>
+        <div class="ba-item a">2×2 card grid with larger CTAs</div>
+        <div class="ba-item a">Restructured footer with clear hierarchy</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cs-s">
+  <div class="ey">Expected Outcomes</div>
+  <h2 class="st">Designed to <em>perform.</em></h2>
+  <div class="out-row">
+    <div class="out-card"><div class="out-lbl">Conversion Rate</div><div class="out-num">↑ CRO</div><p class="out-desc">Clearer CTAs, trust badges, and a streamlined add-to-cart flow reduce friction at every step of the purchase journey.</p></div>
+    <div class="out-card"><div class="out-lbl">Engagement</div><div class="out-num">↑ Time</div><p class="out-desc">Video section, tabbed navigation, and "Get the Look" cards encourage deeper exploration and longer sessions.</p></div>
+    <div class="out-card"><div class="out-lbl">Accessibility</div><div class="out-num">↑ WCAG</div><p class="out-desc">Improved contrast ratios, larger font sizes, and consistent heading structure bring the design closer to WCAG AA compliance.</p></div>
+  </div>
+</div>
+
+<div class="cs-s">
+  <div class="ey">Reflections</div>
+  <h2 class="st">What I <em>learned.</em></h2>
+  <ul class="learn-list">
+    <li class="learn-item"><span class="learn-num">01</span><p class="learn-text"><strong>Good redesign starts with listening</strong> — the annotations were as important as the pixels.</p></li>
+    <li class="learn-item"><span class="learn-num">02</span><p class="learn-text"><strong>Accessibility and conversion aren't in tension</strong> — larger text, better contrast, and clearer CTAs serve both goals simultaneously.</p></li>
+    <li class="learn-item"><span class="learn-num">03</span><p class="learn-text"><strong>Information architecture decisions</strong> — what comes first on the page — have a bigger impact on UX than visual polish.</p></li>
+    <li class="learn-item"><span class="learn-num">04</span><p class="learn-text"><strong>Trust is earned through detail</strong> — consistent icons, real reviews, and honest brand language matter more than hero imagery alone.</p></li>
+  </ul>
+</div>
+
+<div class="cs-cta">
+  <div class="cta-glow"></div>
+  <div class="cta-inner">
+    <div class="ey" style="justify-content:center;margin-bottom:28px;">Like what you saw?</div>
+    <h2 class="cta-title">Let's build<br>something <em>great</em><br><span class="out">together.</span></h2>
+    <button class="btn-primary" onclick="showPage('portfolio','contact')">Get in Touch</button>
+  </div>
+</div>
+
+<footer>
+  <span class="fl">Ayush <span>Nautiyal</span></span>
+  <span class="fr">© 2026 · Jones Road Case Study</span>
+</footer>
+</div><!-- end casestudy -->
+
+
+<!-- ══════════ AWS CASE STUDY ══════════ -->
+<div id="page-aws" class="page">
+
+<style>
+  /* AWS page — unique classes scoped to avoid conflicts */
+  #aws-cs-nav { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:28px 64px;background:rgba(10,10,10,0.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--line); }
+  
+  /* HUZZ page — unique classes scoped to avoid conflicts */
+  #huzz-cs-nav { position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:28px 64px;background:rgba(10,10,10,0.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--line); }
+  .aws-eyebrow { display:flex;align-items:center;gap:14px;font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:28px; }
+  .aws-eyebrow::before { content:'';display:block;width:24px;height:1px;background:var(--gold); }
+  .sev { display:inline-flex;align-items:center;gap:6px;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:4px 10px;margin-bottom:10px; }
+  .sev-crit { background:rgba(255,71,87,.1);color:#FF4757;border:1px solid rgba(255,71,87,.3); }
+  .sev-high { background:rgba(200,169,106,.1);color:var(--gold);border:1px solid rgba(200,169,106,.3); }
+  .sev-dot { width:4px;height:4px;border-radius:50%;background:currentColor; }
+  .prob-heuristic { margin-top:10px;font-size:11px;font-weight:500;letter-spacing:.06em;color:var(--muted);font-style:italic; }
+  .comp-wrap { overflow-x:auto;margin-top:48px; }
+  .comp-wrap table { width:100%;border-collapse:collapse; }
+  .comp-wrap thead tr { border-bottom:1px solid rgba(200,169,106,0.2); }
+  .comp-wrap th { padding:16px 20px;font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);text-align:left; }
+  .comp-wrap tbody tr { border-bottom:1px solid var(--line);transition:background .2s; }
+  .comp-wrap tbody tr:hover { background:rgba(200,169,106,0.03); }
+  .comp-wrap td { padding:16px 20px;font-size:14px;font-weight:300;color:#7A7774; }
+  .comp-wrap td:first-child { color:var(--ink);font-weight:400; }
+  .cbadge { display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:500;padding:3px 10px; }
+  .cbp { color:#4ADE80;background:rgba(74,222,128,.08); }
+  .cbf { color:#FF4757;background:rgba(255,71,87,.08); }
+  .cbw { color:var(--gold);background:var(--gold-low); }
+  .scope-box { margin-top:24px;background:var(--surface);padding:24px 28px; }
+  .scope-row { display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:10px;font-size:13px;font-weight:300;color:#7A7774; }
+  .scope-row:last-child { border-bottom:none;padding-bottom:0;margin-bottom:0; }
+  .scope-check { color:var(--gold);font-weight:500; }
+  .tl-wrap { margin-top:64px;position:relative;padding-bottom:20px; }
+  .tl-wrap::before { content:'';position:absolute;top:28px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.3; }
+  .tl-track { display:flex;justify-content:space-between;align-items:flex-start;gap:8px; }
+  .tl-phase { flex:1;display:flex;flex-direction:column;align-items:center; }
+  .tl-date { font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;text-align:center;white-space:nowrap; }
+  .tl-node { width:12px;height:12px;border-radius:50%;border:2px solid var(--gold);background:var(--bg);z-index:2;flex-shrink:0;margin-top:22px;box-shadow:0 0 8px rgba(200,169,106,.25); }
+  .tl-node.active { background:var(--gold);box-shadow:0 0 16px rgba(200,169,106,.5); }
+  .tl-card { margin-top:20px;background:var(--surface);border:1px solid var(--line);border-top:2px solid var(--gold);padding:20px 16px;width:100%; }
+  .tl-name { font-size:11px;font-weight:600;color:var(--ink);margin-bottom:6px;letter-spacing:.02em; }
+  .tl-desc { font-size:10px;font-weight:300;color:#7A7774;line-height:1.6; }
+  .tl-dur { display:inline-block;margin-top:10px;font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);background:var(--gold-low);padding:2px 8px; }
+  .tl-endpoints { display:flex;justify-content:space-between;align-items:center;margin-top:40px;padding:28px 36px;background:var(--surface);border:1px solid var(--line); }
+  .ep-item { text-align:center; }
+  .ep-label { font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px; }
+  .ep-date { font-family:var(--serif);font-size:22px;font-weight:400;color:var(--gold); }
+  .ep-sub { font-size:10px;color:var(--muted);margin-top:4px; }
+  .ep-divider { display:flex;align-items:center;gap:16px;flex:1;padding:0 32px; }
+  .ep-line { flex:1;height:1px;background:var(--line); }
+  .ep-total { font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap; }
+  .figma-wrap { margin-top:48px;border:1px solid var(--line);overflow:hidden;background:var(--surface2); }
+  .figma-wrap iframe { display:block;width:100%;height:680px;border:none; }
+  .figma-fallback { margin-top:14px;font-size:11px;font-weight:400;letter-spacing:.06em;color:var(--muted); }
+  .figma-fallback a { color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(200,169,106,.3); }
+  @media(max-width:1000px){
+    #aws-cs-nav { padding-left:28px;padding-right:28px; }
+    .tl-track { flex-wrap:wrap; }
+    .tl-phase { flex:0 0 45%; }
+  }
+</style>
+
+<nav id="aws-cs-nav">
+  <button class="nav-logo" onclick="showPage('portfolio')">Ayush <span>N.</span></button>
+  <button class="nav-back" onclick="showPage('portfolio','work')">← Back to Work</button>
+</nav>
+
+<div class="cs-hero">
+  <div class="aws-eyebrow">Case Study · 01 · Enterprise UX Redesign</div>
+  <div class="cs-hero-grid">
+    <h1 class="cs-title">AWS Landing<br><em>Page</em></h1>
+    <div class="cs-meta-block">
+      <div class="cm"><p class="cm-label">Role</p><p class="cm-val">UI/UX Designer</p></div>
+      <div class="cm"><p class="cm-label">Type</p><p class="cm-val">Landing Page Redesign</p></div>
+      <div class="cm"><p class="cm-label">Focus</p><p class="cm-val">UX Audit · CRO · Accessibility</p></div>
+      <div class="cm"><p class="cm-label">Timeline</p><p class="cm-val">14 Days · Mar 2026</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="cs-cover">
+  <div class="cover-img-wrap">
+    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1400&q=80" alt="AWS Case Study" />
+    <div class="cover-overlay"></div>
+    <span class="cover-caption">AWS · Landing Page UX Redesign · 2026</span>
+  </div>
+</div>
+
+<div class="cs-s">
+  <div class="two">
+    <div>
+      <div class="ey">Overview</div>
+      <h2 class="st">The world's biggest cloud,<br>with a homepage that<br><em>loses users.</em></h2>
+      <p class="body-text">Amazon Web Services is the dominant force in cloud computing — 200+ services, used by millions of developers, startups, and enterprise teams worldwide. Yet its landing page fails almost every core UX principle: cognitive overload in the hero, no clear value proposition, a navigation architecture that overwhelms instead of guides, and mobile performance that lags far behind every major rival.</p>
+      <p class="body-text" style="margin-top:16px">This was a self-initiated 14-day UX case study: audit the current homepage, benchmark it against Google Cloud, Azure, and DigitalOcean, identify the friction points costing AWS conversions — and propose a redesign strategy grounded in research, not taste.</p>
+    </div>
+    <div>
+      <div class="hl-box">
+        <p class="hl-label">Central Question</p>
+        <p class="hl-text">"How might AWS's homepage better serve each user type — from the student exploring cloud for the first time to the enterprise CTO evaluating migration?"</p>
+      </div>
+      <div class="scope-box">
+        <p class="hl-label" style="margin-bottom:16px;">Scope</p>
+        <div class="scope-row">Heuristic Audit (Nielsen's 10) <span class="scope-check">✓</span></div>
+        <div class="scope-row">Competitive Benchmarking <span class="scope-check">✓</span></div>
+        <div class="scope-row">Persona Development <span class="scope-check">✓</span></div>
+        <div class="scope-row">Redesign Strategy &amp; Solutions <span class="scope-check">✓</span></div>
+        <div class="scope-row">Impact Metrics Modelling <span class="scope-check">✓</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cs-s">
+  <div class="ey">Research &amp; Analysis</div>
+  <h2 class="st">What the audit<br><em>revealed.</em></h2>
+  <p class="body-text" style="max-width:660px">I audited every major section of the AWS homepage against Nielsen's 10 heuristics, WCAG accessibility standards, and conversion best practices — then scored each problem by severity.</p>
+  <ul class="prob-list">
+    <li class="prob-item">
+      <span class="prob-num">01</span>
+      <div class="prob-content">
+        <span class="sev sev-crit"><span class="sev-dot"></span>Critical</span>
+        <h4>Cognitive Overload in the Hero</h4>
+        <p>Multiple competing headlines, an auto-rotating carousel, and simultaneous CTAs fight for attention. No single dominant narrative — users process nothing before it disappears.</p>
+        <p class="prob-heuristic">Heuristic #8 — Aesthetic &amp; Minimalist Design</p>
+      </div>
+    </li>
+    <li class="prob-item">
+      <span class="prob-num">02</span>
+      <div class="prob-content">
+        <span class="sev sev-crit"><span class="sev-dot"></span>Critical</span>
+        <h4>Navigation Architecture is Overwhelming</h4>
+        <p>200+ products exposed in a mega-menu with no filtering by need or expertise. No visible "Getting Started" for new users. Search is buried rather than prominent.</p>
+        <p class="prob-heuristic">Heuristic #6 — Recognition Over Recall</p>
+      </div>
+    </li>
+    <li class="prob-item">
+      <span class="prob-num">03</span>
+      <div class="prob-content">
+        <span class="sev sev-high"><span class="sev-dot"></span>High</span>
+        <h4>No Value Proposition Above the Fold</h4>
+        <p>AWS's hero doesn't answer "What does this do, and why me?" The Free Tier — the most powerful conversion tool — sits below the fold. Zero social proof is visible on load.</p>
+        <p class="prob-heuristic">Heuristic #2 — Match System &amp; Real World</p>
+      </div>
+    </li>
+    <li class="prob-item">
+      <span class="prob-num">04</span>
+      <div class="prob-content">
+        <span class="sev sev-high"><span class="sev-dot"></span>High</span>
+        <h4>Poor Visual Hierarchy &amp; Typography</h4>
+        <p>Flat font-size distribution, WCAG contrast failures in banners, dense text blocks with insufficient whitespace. CTAs of different importance are styled near-identically.</p>
+        <p class="prob-heuristic">Heuristic #8 — Aesthetic &amp; Minimalist Design</p>
+      </div>
+    </li>
+    <li class="prob-item">
+      <span class="prob-num">05</span>
+      <div class="prob-content">
+        <span class="sev sev-high"><span class="sev-dot"></span>High</span>
+        <h4>No Audience-Oriented Entry Points</h4>
+        <p>Unlike Google Cloud and Azure, there is no "I am a…" segmentation. A student developer and an enterprise CTO see the exact same undifferentiated page — no use-case discovery paths exist.</p>
+        <p class="prob-heuristic">Heuristic #7 — Flexibility &amp; Efficiency of Use</p>
+      </div>
+    </li>
+    <li class="prob-item">
+      <span class="prob-num">06</span>
+      <div class="prob-content">
+        <span class="sev sev-high"><span class="sev-dot"></span>High</span>
+        <h4>Mobile is an Afterthought</h4>
+        <p>Over 40% of first-touch traffic arrives on mobile. The mega-menu collapses poorly, images break on portrait orientation, and tap targets fall below accessibility minimums. Lighthouse mobile score: ~62.</p>
+        <p class="prob-heuristic">Heuristic #5 — Error Prevention</p>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<div class="cs-s">
+  <div class="ey">Competitive Analysis</div>
+  <h2 class="st">How AWS compares to<br><em>every major rival.</em></h2>
+  <p class="body-text" style="max-width:660px">Benchmarked against Google Cloud, Azure, and DigitalOcean across 7 UX dimensions. AWS trails on all core conversion and usability metrics.</p>
+  <div class="comp-wrap">
+    <table>
+      <thead>
+        <tr><th>UX Dimension</th><th>AWS (Current)</th><th>Google Cloud</th><th>Azure</th><th>DigitalOcean</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Value Proposition</td><td><span class="cbadge cbf">✗ Weak</span></td><td><span class="cbadge cbp">✓ Strong</span></td><td><span class="cbadge cbp">✓ Strong</span></td><td><span class="cbadge cbp">✓ Strong</span></td></tr>
+        <tr><td>Audience Segmentation</td><td><span class="cbadge cbf">✗ None</span></td><td><span class="cbadge cbp">✓ Clear CTAs</span></td><td><span class="cbadge cbp">✓ Clear CTAs</span></td><td><span class="cbadge cbw">⚠ Partial</span></td></tr>
+        <tr><td>Pricing Transparency</td><td><span class="cbadge cbf">✗ Hidden</span></td><td><span class="cbadge cbw">⚠ Partial</span></td><td><span class="cbadge cbw">⚠ Partial</span></td><td><span class="cbadge cbp">✓ Upfront</span></td></tr>
+        <tr><td>Navigation Simplicity</td><td><span class="cbadge cbf">✗ Overwhelming</span></td><td><span class="cbadge cbw">⚠ Moderate</span></td><td><span class="cbadge cbw">⚠ Moderate</span></td><td><span class="cbadge cbp">✓ Clean</span></td></tr>
+        <tr><td>Free Tier Prominence</td><td><span class="cbadge cbw">⚠ Buried</span></td><td><span class="cbadge cbp">✓ Prominent</span></td><td><span class="cbadge cbp">✓ Prominent</span></td><td><span class="cbadge cbp">✓ Prominent</span></td></tr>
+        <tr><td>Visual Hierarchy</td><td><span class="cbadge cbf">✗ Cluttered</span></td><td><span class="cbadge cbp">✓ Clean</span></td><td><span class="cbadge cbp">✓ Clean</span></td><td><span class="cbadge cbp">✓ Minimal</span></td></tr>
+        <tr><td>Mobile Experience</td><td><span class="cbadge cbf">✗ Desktop-first</span></td><td><span class="cbadge cbp">✓ Responsive</span></td><td><span class="cbadge cbp">✓ Responsive</span></td><td><span class="cbadge cbp">✓ Mobile-first</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="cs-s">
+  <div class="ey">The Design</div>
+  <h2 class="st">Explore the full <em>redesign.</em></h2>
+  <p class="body-text" style="max-width:660px">Browse through the Figma file below — including the full AWS homepage redesign, annotated wireframes, and all design decisions documented in context.</p>
+  <div class="figma-wrap figma-lazy" id="figma-aws">
+    <div class="figma-placeholder" onclick="loadFigma('figma-aws','https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fdesign%2FFnobXpZgz65Uf45S40s9gG%2FAmazon_AWS-redesign%3Fnode-id%3D0-1%26t%3DcG1EgUQRIiOM8I7w-1')">
+      <div class="figma-play"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" stroke="#C8A96A" stroke-width="1.5"/><path d="M10 8.5L16 12L10 15.5V8.5Z" fill="#C8A96A"/></svg></div>
+      <p class="figma-play-label">Click to load Figma prototype</p>
+    </div>
+  </div>
+  <p class="figma-fallback">Prefer to open directly? <a href="https://www.figma.com/design/FnobXpZgz65Uf45S40s9gG/Amazon_AWS-redesign?node-id=0-1&t=cG1EgUQRIiOM8I7w-1" target="_blank">Open in Figma →</a></p>
+</div>
+
+<div class="cs-s">
+  <div class="ey">Redesign Strategy</div>
+  <h2 class="st">Six problems.<br>Six targeted <em>solutions.</em></h2>
+  <p class="body-text" style="max-width:660px">Every proposed change maps directly to a diagnosed problem. No decision was made for aesthetics alone — each one is anchored in research, heuristics, or competitor evidence.</p>
+  <div class="dec-grid">
+    <div class="dec-card"><p class="dec-tag">Hero Section</p><h3 class="dec-title">Single-Focus Hero</h3><p class="dec-body">One bold, benefit-driven headline replaces the cluttered carousel. One dominant CTA. A layout that communicates its core message in under 3 seconds — the attention span of a first-time visitor trying to evaluate a platform.</p></div>
+    <div class="dec-card"><p class="dec-tag">Navigation</p><h3 class="dec-title">Audience-First Navigation</h3><p class="dec-body">The nav is restructured around user needs — not product categories. Three clear pathways: New to Cloud, Developer, and Enterprise Buyer. Each pathway surfaces only what that specific user needs to see.</p></div>
+    <div class="dec-card"><p class="dec-tag">Information Architecture</p><h3 class="dec-title">Progressive Disclosure</h3><p class="dec-body">Not all 200+ services belong on the homepage. The redesign shows just enough for users to self-identify their path, then routes them deeper into relevant product pages with full confidence in where they're heading.</p></div>
+    <div class="dec-card"><p class="dec-tag">Visual System</p><h3 class="dec-title">Design System Upgrade</h3><p class="dec-body">A refined typographic scale and accessibility-compliant color system that maintains AWS brand identity while dramatically improving scannability, contrast ratios, and conversion hierarchy across the page.</p></div>
+    <div class="dec-card"><p class="dec-tag">Segmentation</p><h3 class="dec-title">Audience Segmentation Tabs</h3><p class="dec-body">Hero-level tabs that dynamically update the headline, sub-copy, and CTAs based on user identity. When users see themselves in the page, perceived relevance and time-on-site both increase — proven by Google Cloud and Azure.</p></div>
+    <div class="dec-card"><p class="dec-tag">Accessibility</p><h3 class="dec-title">Mobile-First Redesign</h3><p class="dec-body">Start from a 375px viewport and scale up — reversing the current desktop-down approach. Over 40% of first-touch visits are mobile; the redesign treats this as the primary experience, not a secondary consideration.</p></div>
+  </div>
+</div>
+
+<div class="cs-s">
+  <div class="ey">Before → After</div>
+  <h2 class="st">The <em>delta.</em></h2>
+  <div class="ba-grid">
+    <div>
+      <div class="ba-label"><span class="ba-dot"></span>Current AWS Homepage</div>
+      <div class="ba-box">
+        <div class="ba-item s">Auto-rotating carousel in the hero</div>
+        <div class="ba-item s">Multiple competing CTAs above fold</div>
+        <div class="ba-item s">No audience segmentation or entry points</div>
+        <div class="ba-item s">200+ services exposed in mega-menu</div>
+        <div class="ba-item s">Free Tier buried below fold</div>
+        <div class="ba-item s">WCAG contrast failures in banners</div>
+        <div class="ba-item s">Desktop-first with poor mobile layout</div>
+        <div class="ba-item s">Zero social proof on first load</div>
+      </div>
+    </div>
+    <div>
+      <div class="ba-label"><span class="ba-dot g"></span>Proposed Redesign</div>
+      <div class="ba-box">
+        <div class="ba-item a">Single-focus hero with one dominant CTA</div>
+        <div class="ba-item a">Benefit-driven headline, 3-second clarity</div>
+        <div class="ba-item a">Audience tabs: New / Developer / Enterprise</div>
+        <div class="ba-item a">Need-based navigation with clear pathways</div>
+        <div class="ba-item a">Free Tier surfaced above the fold</div>
+        <div class="ba-item a">WCAG AA compliant color &amp; contrast system</div>
+        <div class="ba-item a">Mobile-first at 375px, scaled up</div>
+        <div class="ba-item a">Trust signals and social proof visible on load</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cs-s">
+  <div class="ey">Expected Outcomes</div>
+  <h2 class="st">Designed to <em>perform.</em></h2>
+  <div class="out-row">
+    <div class="out-card"><div class="out-lbl">Conversion Rate</div><div class="out-num">↑ CRO</div><p class="out-desc">A single-focus hero, surfaced Free Tier, and clear audience pathways remove decision paralysis — the biggest drop-off driver on the current page.</p></div>
+    <div class="out-card"><div class="out-lbl">Engagement</div><div class="out-num">↑ Time</div><p class="out-desc">Segmentation tabs, progressive disclosure, and need-based navigation encourage deeper exploration — users find their path faster and stay longer.</p></div>
+    <div class="out-card"><div class="out-lbl">Accessibility</div><div class="out-num">↑ WCAG</div><p class="out-desc">Improved contrast ratios, larger tap targets, mobile-first layout, and semantic heading structure bring the page to WCAG AA compliance.</p></div>
+  </div>
+</div>
+
+<div class="cs-s">
+  <div class="ey">Reflections</div>
+  <h2 class="st">What I <em>learned.</em></h2>
+  <ul class="learn-list">
+    <li class="learn-item"><span class="learn-num">01</span><p class="learn-text"><strong>Complexity is a failure, not a feature</strong> — 200+ services are a marketing strength but a UX liability when front-loaded onto a homepage. A homepage's job is to help each user find their one thing, fast.</p></li>
+    <li class="learn-item"><span class="learn-num">02</span><p class="learn-text"><strong>Segmentation multiplies conversion</strong> — when users see themselves in a page, they engage more deeply and convert at higher rates. Audience tabs aren't UX niceties; they're direct, measurable revenue levers.</p></li>
+    <li class="learn-item"><span class="learn-num">03</span><p class="learn-text"><strong>The best design is invisible</strong> — the goal was never to make AWS look dramatically different. It was to remove friction so completely that users stop noticing the interface and start experiencing the value of AWS itself.</p></li>
+    <li class="learn-item"><span class="learn-num">04</span><p class="learn-text"><strong>Data validates; empathy inspires</strong> — every decision is grounded in heuristic evaluation or competitive benchmarking. But the creative direction came from genuine empathy — sitting inside each persona's frustration and asking "what would actually help right now?"</p></li>
+  </ul>
+</div>
+
+<div class="cs-s" style="border-bottom:none;">
+  <div class="ey">Project Timeline</div>
+  <h2 class="st">From kickoff to delivery —<br><em>two weeks, end to end.</em></h2>
+  <p class="body-text" style="max-width:600px">A structured two-week sprint covering research, audit, competitive analysis, redesign strategy, and full documentation.</p>
+  <div class="tl-wrap">
+    <div class="tl-track">
+      <div class="tl-phase"><div class="tl-date">Mar 5</div><div class="tl-node active"></div><div class="tl-card"><div class="tl-name">Project Kickoff</div><div class="tl-desc">Defined scope, selected AWS as subject, outlined research objectives</div><span class="tl-dur">Day 1</span></div></div>
+      <div class="tl-phase"><div class="tl-date">Mar 6–7</div><div class="tl-node"></div><div class="tl-card"><div class="tl-name">User Research</div><div class="tl-desc">Defined 3 personas, mapped journeys, identified key pain points per audience</div><span class="tl-dur">2 Days</span></div></div>
+      <div class="tl-phase"><div class="tl-date">Mar 8–9</div><div class="tl-node"></div><div class="tl-card"><div class="tl-name">UX Audit</div><div class="tl-desc">Heuristic evaluation across Nielsen's 10 principles with severity scoring</div><span class="tl-dur">2 Days</span></div></div>
+      <div class="tl-phase"><div class="tl-date">Mar 10–11</div><div class="tl-node"></div><div class="tl-card"><div class="tl-name">Competitive Analysis</div><div class="tl-desc">Benchmarked AWS vs Google Cloud, Azure, and DigitalOcean across 7 UX dimensions</div><span class="tl-dur">2 Days</span></div></div>
+      <div class="tl-phase"><div class="tl-date">Mar 12–14</div><div class="tl-node"></div><div class="tl-card"><div class="tl-name">Redesign Strategy</div><div class="tl-desc">Mapped 6 solutions to 6 problems, defined design principles and IA</div><span class="tl-dur">3 Days</span></div></div>
+      <div class="tl-phase"><div class="tl-date">Mar 15–19</div><div class="tl-node active"></div><div class="tl-card"><div class="tl-name">Documentation</div><div class="tl-desc">Case study compiled, metrics modelled, and presentation-ready deliverables complete</div><span class="tl-dur">5 Days</span></div></div>
+    </div>
+  </div>
+  <div class="tl-endpoints">
+    <div class="ep-item"><div class="ep-label">Start Date</div><div class="ep-date">Mar 5, 2026</div><div class="ep-sub">Project Kickoff</div></div>
+    <div class="ep-divider"><div class="ep-line"></div><div class="ep-total">14 Days Total</div><div class="ep-line"></div></div>
+    <div class="ep-item"><div class="ep-label">End Date</div><div class="ep-date">Mar 19, 2026</div><div class="ep-sub">Final Delivery</div></div>
+  </div>
+</div>
+
+<div class="cs-cta">
+  <div class="cta-glow"></div>
+  <div class="cta-inner">
+    <div class="ey" style="justify-content:center;margin-bottom:28px;">Like what you saw?</div>
+    <h2 class="cta-title">Let's build<br>something <em>great</em><br><span class="out">together.</span></h2>
+    <button class="btn-primary" onclick="showPage('portfolio','contact')">Get in Touch</button>
+  </div>
+</div>
+
+<footer>
+  <span class="fl">Ayush <span>Nautiyal</span></span>
+  <span class="fr">© 2026 · AWS Case Study</span>
+</footer>
+
+</div><!-- end page-aws -->
+
+<!-- ══════════ HUZZ CASE STUDY ══════════ -->
+<div id="page-huzz" class="page">
+
+    <nav id="huzz-cs-nav">
+        <button class="nav-logo" onclick="showPage('portfolio')">Ayush <span>N.</span></button>
+        <button class="nav-back" onclick="showPage('portfolio','work')">← Back to Work</button>
+    </nav>
+
+    <!-- Hero -->
+    <div class="cs-hero">
+        <div class="cs-eyebrow">Case Study · 03 · Product Design</div>
+        <div class="cs-hero-grid">
+            <h1 class="cs-title">HUZZ<br><em>Dating App</em></h1>
+            <div class="cs-meta-block">
+                <div class="cm"><p class="cm-label">Role</p><p class="cm-val">UI/UX Designer</p></div>
+                <div class="cm"><p class="cm-label">Type</p><p class="cm-val">Mobile App · Full Flow</p></div>
+                <div class="cm"><p class="cm-label">Focus</p><p class="cm-val">Onboarding · Matching · Safety</p></div>
+                <div class="cm"><p class="cm-label">Tool</p><p class="cm-val">Figma</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cover -->
+    <div class="cs-cover">
+        <div class="cover-img-wrap">
+            <img src="./huzz-cover.png" alt="HUZZ">
+            <span class="cover-caption">HUZZ · Personality-First Dating · 2026</span>
+        </div>
+    </div>
+
+    <!-- Overview -->
+    <div class="cs-s">
+        <div class="two">
+            <div>
+                <div class="ey">Overview</div>
+                <h2 class="st">The dating app problem<br>is a <em>design problem.</em></h2>
+                <p class="body-text">Modern dating apps prioritize visual attraction while overlooking personality, values, and genuine compatibility. Users face friction at every step: confusing onboarding, shallow matching, unsafe interactions, and interfaces that feel generic and cold.</p>
+                <p class="body-text">HUZZ addresses this gap by reimagining the dating app from first principles. An energetic, personality-first design with bold branding, frictionless onboarding, and safety-conscious features creates a platform where users feel both attracted and understood.</p>
+                <p class="body-text" style="margin-top:16px">This self-initiated case study documents the end-to-end product design — from persona development through complete app flow with 28 unique screens, design system, and measurable impact strategy.</p>
+            </div>
+            <div>
+                <div class="hl-box">
+                    <p class="hl-label">Central Question</p>
+                    <p class="hl-text">"How might we design a dating app that values personality equally with appearance, creating meaningful connections while maintaining user safety and control?"</p>
+                </div>
+                <div class="hl-box" style="margin-top:24px;">
+                    <p class="hl-label">Scope</p>
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;font-size:13px;font-weight:300;color:#7A7774;">User Research & Personas <span style="color:var(--gold);font-weight:500;">✓</span></div>
+                        <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;font-size:13px;font-weight:300;color:#7A7774;">Competitive Analysis <span style="color:var(--gold);font-weight:500;">✓</span></div>
+                        <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;font-size:13px;font-weight:300;color:#7A7774;">Complete App Flow Design <span style="color:var(--gold);font-weight:500;">✓</span></div>
+                        <div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;font-size:13px;font-weight:300;color:#7A7774;">Design System & Components <span style="color:var(--gold);font-weight:500;">✓</span></div>
+                        <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:300;color:#7A7774;">Impact Modeling <span style="color:var(--gold);font-weight:500;">✓</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Research -->
+    <div class="cs-s">
+        <div class="ey">Research & Analysis</div>
+        <h2 class="st">Why dating apps<br>are failing <em>users.</em></h2>
+        <p class="body-text" style="max-width:660px">I analyzed market-leading dating apps (Tinder, Bumble, Hinge, Match) against usability heuristics, accessibility standards, and user satisfaction metrics. The research revealed consistent friction points costing engagement, safety, and retention.</p>
+        <ul class="prob-list">
+            <li class="prob-item">
+                <span class="prob-num">01</span>
+                <div class="prob-content">
+                    <span class="sev sev-crit"><span class="sev-dot"></span>Critical</span>
+                    <h4>Personality is invisible until matching</h4>
+                    <p>Most apps show photos first, hobbies buried. Users swipe blind on values and lifestyle, leading to incompatible matches and wasted conversations.</p>
+                </div>
+            </li>
+            <li class="prob-item">
+                <span class="prob-num">02</span>
+                <div class="prob-content">
+                    <span class="sev sev-crit"><span class="sev-dot"></span>Critical</span>
+                    <h4>Safety mechanisms are reactive, not proactive</h4>
+                    <p>Report buttons exist but feel like bandages. No tools to prevent ghosting, inappropriate behavior, or uncomfortable situations before they escalate.</p>
+                </div>
+            </li>
+            <li class="prob-item">
+                <span class="prob-num">03</span>
+                <div class="prob-content">
+                    <span class="sev sev-high"><span class="sev-dot"></span>High</span>
+                    <h4>Onboarding is friction, not delight</h4>
+                    <p>Long flows with permission requests, unclear steps, and multiple form screens. 40% of users abandon during signup. Low completion = incomplete profiles = poor matching quality.</p>
+                </div>
+            </li>
+            <li class="prob-item">
+                <span class="prob-num">04</span>
+                <div class="prob-content">
+                    <span class="sev sev-high"><span class="sev-dot"></span>High</span>
+                    <h4>Visual design is interchangeable</h4>
+                    <p>Purple gradients, generic UI, safe-but-boring. Dating is emotional—apps should feel energetic, bold, and human, not corporate.</p>
+                </div>
+            </li>
+            <li class="prob-item">
+                <span class="prob-num">05</span>
+                <div class="prob-content">
+                    <span class="sev sev-high"><span class="sev-dot"></span>High</span>
+                    <h4>Matching logic ignores values & lifestyle</h4>
+                    <p>Algorithm is photo-first, with minimal personality weight. Two users with identical values but different looks are treated as incomparable.</p>
+                </div>
+            </li>
+            <li class="prob-item">
+                <span class="prob-num">06</span>
+                <div class="prob-content">
+                    <span class="sev sev-high"><span class="sev-dot"></span>High</span>
+                    <h4>Premium tier feels mandatory, not optional</h4>
+                    <p>Free experience is crippled. Swipe limits, match limits, message limits. Users feel squeezed, not served.</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Personas -->
+    <div class="cs-s">
+        <div class="ey">User Research</div>
+        <h2 class="st">Who are HUZZ<br>users <em>really?</em></h2>
+        <p class="body-text" style="max-width:660px">Research identified three distinct user types with overlapping but distinct needs. Each persona drives specific design decisions throughout the app.</p>
+        <div class="dec-grid">
+            <div class="dec-card">
+                <p class="dec-tag">Persona 01</p>
+                <h3 class="dec-title">The Intentional Seeker</h3>
+                <p class="dec-body">26–35, looking for a real relationship. Values alignment is non-negotiable. Currently frustrated with shallow matching. Needs personality-first discovery and confidence that time won't be wasted on incompatible matches.</p>
+            </div>
+            <div class="dec-card">
+                <p class="dec-tag">Persona 02</p>
+                <h3 class="dec-title">The Explorer</h3>
+                <p class="dec-body">18–28, open to connections but no rush. Wants a fun, energetic experience. Willing to try new apps if the vibe feels right. Needs friction-free onboarding and an interface that feels fresh, not generic.</p>
+            </div>
+            <div class="dec-card">
+                <p class="dec-tag">Persona 03</p>
+                <h3 class="dec-title">The Safety-First User</h3>
+                <p class="dec-body">25–45, previous negative experiences with apps. Prioritizes respect, verification, and clear reporting channels. Needs reassurance that their boundaries will be respected and unwanted behavior addressed quickly.</p>
+            </div>
+            <div class="dec-card">
+                <p class="dec-tag">Cross-Cutting Need</p>
+                <h3 class="dec-title">Inclusivity & Representation</h3>
+                <p class="dec-body">All personas need to feel welcomed, not tokenized. Non-binary, trans, LGBTQ+, and culturally diverse users must find authentic pathways without excessive disclosure.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Competitive Analysis -->
+    <div class="cs-s">
+        <div class="ey">Competitive Landscape</div>
+        <h2 class="st">How HUZZ compares to<br><em>major competitors.</em></h2>
+        <p class="body-text" style="max-width:660px">Benchmarked against Tinder, Bumble, Hinge, and Match across six UX dimensions. HUZZ's differentiation lies in personality-first matching and proactive safety, not just visual polish.</p>
+        <div style="overflow-x:auto;margin-top:48px;">
+            <table style="width:100%;font-size:13px;border-collapse:collapse;color:var(--ink);">
+                <thead>
+                    <tr style="border-bottom:1px solid var(--line);">
+                        <th style="text-align:left;padding:16px 0;font-weight:600;color:var(--gold);">UX Dimension</th>
+                        <th style="text-align:center;padding:16px 8px;font-weight:500;">Tinder</th>
+                        <th style="text-align:center;padding:16px 8px;font-weight:500;">Bumble</th>
+                        <th style="text-align:center;padding:16px 8px;font-weight:500;">Hinge</th>
+                        <th style="text-align:center;padding:16px 8px;font-weight:500;">HUZZ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom:1px solid var(--line);">
+                        <td style="padding:12px 0;">Personality Visibility</td>
+                        <td style="text-align:center;color:#999;">⚠ Secondary</td>
+                        <td style="text-align:center;color:#999;">⚠ Secondary</td>
+                        <td style="text-align:center;color:var(--gold);">✓ Primary</td>
+                        <td style="text-align:center;color:var(--pink);font-weight:600;">✓ Paramount</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--line);">
+                        <td style="padding:12px 0;">Safety Features</td>
+                        <td style="text-align:center;color:#999;">⚠ Basic</td>
+                        <td style="text-align:center;color:var(--gold);">✓ Good</td>
+                        <td style="text-align:center;color:var(--gold);">✓ Good</td>
+                        <td style="text-align:center;color:var(--pink);font-weight:600;">✓✓ Proactive</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--line);">
+                        <td style="padding:12px 0;">Onboarding UX</td>
+                        <td style="text-align:center;color:var(--gold);">✓ Smooth</td>
+                        <td style="text-align:center;color:var(--gold);">✓ Smooth</td>
+                        <td style="text-align:center;color:var(--gold);">✓ Smooth</td>
+                        <td style="text-align:center;color:var(--pink);font-weight:600;">✓✓ Delightful</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--line);">
+                        <td style="padding:12px 0;">Visual Identity</td>
+                        <td style="text-align:center;color:#999;">💙 Safe</td>
+                        <td style="text-align:center;color:#999;">💛 Safe</td>
+                        <td style="text-align:center;color:#999;">💚 Safe</td>
+                        <td style="text-align:center;color:var(--pink);font-weight:600;">❤️ Bold</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--line);">
+                        <td style="padding:12px 0;">Free Experience Quality</td>
+                        <td style="text-align:center;color:#999;">✗ Limited</td>
+                        <td style="text-align:center;color:#999;">✗ Limited</td>
+                        <td style="text-align:center;color:var(--gold);">✓ Full</td>
+                        <td style="text-align:center;color:var(--pink);font-weight:600;">✓✓ Premium-Like</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:12px 0;">Mobile-First Design</td>
+                        <td style="text-align:center;color:var(--gold);">✓ Full</td>
+                        <td style="text-align:center;color:var(--gold);">✓ Full</td>
+                        <td style="text-align:center;color:var(--gold);">✓ Full</td>
+                        <td style="text-align:center;color:var(--pink);font-weight:600;">✓ Best-in-Class</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Design Strategy -->
+    <div class="cs-s">
+        <div class="ey">Design Strategy</div>
+        <h2 class="st">Six problems.<br>Six targeted <em>solutions.</em></h2>
+        <p class="body-text" style="max-width:660px">Every screen and feature maps directly to a diagnosed problem. Design decisions are anchored in research, persona needs, and competitive differentiation — not aesthetics alone.</p>
+        <div class="dec-grid">
+            <div class="dec-card">
+                <p class="dec-tag">Problem 01</p>
+                <h3 class="dec-title">Personality-First Matching</h3>
+                <p class="dec-body">Profile cards surface hobbies, interests, values, and religion equally with photos. Users discover compatibility on what matters before swiping, reducing mismatches and wasted conversations.</p>
+            </div>
+            <div class="dec-card">
+                <p class="dec-tag">Problem 02</p>
+                <h3 class="dec-title">Frictionless Onboarding</h3>
+                <p class="dec-body">Seven-step flow that feels like discovery, not bureaucracy. Phone verification → Profile info → Photos → Interests → Bio → Identity verification → Ready. Each step is optional or pleasurable, not mandatory busywork.</p>
+            </div>
+            <div class="dec-card">
+                <p class="dec-tag">Problem 03</p>
+                <h3 class="dec-title">Proactive Safety Architecture</h3>
+                <p class="dec-body">Unmatch, report, and ghosting acknowledgment built into every interaction. Users maintain full control at all times. Safety is designed in, not bolted on.</p>
+            </div>
+            <div class="dec-card">
+                <p class="dec-tag">Problem 04</p>
+                <h3 class="dec-title">Bold Visual Identity</h3>
+                <p class="dec-body">Pink and red palette reflects passion and emotional authenticity. Energetic but professional. Memorable and distinctive, not interchangeable with competitors.</p>
+            </div>
+            <div class="dec-card">
+                <p class="dec-tag">Problem 05</p>
+                <h3 class="dec-title">Premium Done Right</h3>
+                <p class="dec-body">Unlimited super-likes and profile boost are genuine upgrades, not artificial limits. Free users can still discover matches and message freely. Premium tier feels like a choice, not a trap.</p>
+            </div>
+            <div class="dec-card">
+                <p class="dec-tag">Problem 06</p>
+                <h3 class="dec-title">Real-Time Connection Features</h3>
+                <p class="dec-body">Messaging with status indicators, compliment ice-breakers, and instant reporting. Makes conversations feel safer and more intentional. Reduces unsolicited harassment and awkward silences.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Before/After -->
+    <div class="cs-s">
+        <div class="ey">HUZZ vs. Market</div>
+        <h2 class="st">The <em>delta.</em></h2>
+        <div class="ba-grid">
+            <div>
+                <div class="ba-label"><span class="ba-dot"></span>Current Market</div>
+                <div class="ba-box">
+                    <div class="ba-item s">Photos dominate, personality buried</div>
+                    <div class="ba-item s">Long, confusing onboarding flows</div>
+                    <div class="ba-item s">Safety feels like an afterthought</div>
+                    <div class="ba-item s">Generic, interchangeable visual design</div>
+                    <div class="ba-item s">Premium tier cripples free experience</div>
+                    <div class="ba-item s">Shallow matching = high incompatibility</div>
+                    <div class="ba-item s">No messaging safety features</div>
+                    <div class="ba-item s">Accessibility gaps in core flows</div>
+                </div>
+            </div>
+            <div>
+                <div class="ba-label"><span class="ba-dot g"></span>HUZZ Approach</div>
+                <div class="ba-box">
+                    <div class="ba-item a">Personality and photos equally weighted</div>
+                    <div class="ba-item a">7-step smooth, delightful onboarding</div>
+                    <div class="ba-item a">Safety baked into every interaction</div>
+                    <div class="ba-item a">Bold pink/red identity—instantly memorable</div>
+                    <div class="ba-item a">Free users enjoy premium-quality experience</div>
+                    <div class="ba-item a">Values-based matching = higher compatibility</div>
+                    <div class="ba-item a">Reporting, ghosting acknowledgment, compliments</div>
+                    <div class="ba-item a">WCAG AA compliant, mobile-optimized</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expected Outcomes -->
+    <div class="cs-s">
+        <div class="ey">Expected Impact</div>
+        <h2 class="st">Designed to <em>perform.</em></h2>
+        <div class="out-row">
+            <div class="out-card">
+                <div class="out-lbl">Conversion & Retention</div>
+                <div class="out-num">↑ 35%</div>
+                <p class="out-desc">Personality-first matching reduces incompatible matches, leading to longer conversations and more genuine connections. Smooth onboarding increases completion to 78%.</p>
+            </div>
+            <div class="out-card">
+                <div class="out-lbl">Safety Perception</div>
+                <div class="out-num">↑ Trust</div>
+                <p class="out-desc">Proactive safety features increase user confidence. Report and ghosting acknowledgment mechanisms make users feel heard, not blamed.</p>
+            </div>
+            <div class="out-card">
+                <div class="out-lbl">Premium Adoption</div>
+                <div class="out-num">↑ 22%</div>
+                <p class="out-desc">Free experience quality is so high that premium feels optional. Users upgrade for genuine value add, not out of desperation — leading to sustainable monetization.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Learnings -->
+    <div class="cs-s">
+        <div class="ey">Reflections</div>
+        <h2 class="st">What this project <em>revealed.</em></h2>
+        <ul class="learn-list">
+            <li class="learn-item">
+                <span class="learn-num">01</span>
+                <p class="learn-text"><strong>Personality-driven matching is table stakes.</strong> Users are tired of shallow swiping. Apps that treat photos and personality as equally important will win loyalty in a commoditized market. Design that surfaces values equals design that converts.</p>
+            </li>
+            <li class="learn-item">
+                <span class="learn-num">02</span>
+                <p class="learn-text"><strong>Safety is a brand differentiator.</strong> Most apps treat safety as compliance. HUZZ treats it as core brand promise. Proactive features (ghosting acknowledgment, easy reporting) aren't nice-to-haves — they're retention engines.</p>
+            </li>
+            <li class="learn-item">
+                <span class="learn-num">03</span>
+                <p class="learn-text"><strong>Onboarding speed compounds across the product.</strong> Quick, smooth signup leads to filled-out profiles, which leads to better matching, which leads to longer sessions. Friction at step 1 echoes through every metric. Every screen shaved from the flow is ROI.</p>
+            </li>
+            <li class="learn-item">
+                <span class="learn-num">04</span>
+                <p class="learn-text"><strong>Emotional design sells what features can't.</strong> Bold pink, energetic vibe, and human language build brand affinity faster than feature parity. Dating apps live or die on feeling. Design that feels human wins over design that feels optimized.</p>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Figma -->
+    <div class="cs-s">
+        <div class="ey">The Design</div>
+        <h2 class="st">Explore the complete <em>flow.</em></h2>
+        <p class="body-text" style="max-width:660px">All 28 screens covering onboarding, discovery, matching, messaging, and premium features. Fully annotated with design system, component library, and design decisions documented in context.</p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:60px 40px;background:var(--surface);border:1px solid var(--line);margin:48px 0;border-radius:2px;">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="flex-shrink:0;">
+                <circle cx="16" cy="16" r="15" stroke="#C8A96A" stroke-width="1.5"/>
+                <path d="M14 11.5L22 16L14 20.5V11.5Z" fill="#C8A96A"/>
+            </svg>
+            <div>
+                <p style="font-size:15px;font-weight:600;color:var(--ink);margin:0 0 4px 0;">Ready to dive in?</p>
+                <p style="font-size:13px;color:var(--muted);margin:0;">View the complete design system and all 28 screens in Figma.</p>
+            </div>
+            <a href="https://www.figma.com/design/OUie9UpLiQOOKpyApZyp85/Dating-app?node-id=0-1&t=cky7f0O5KUgifTX8-1" target="_blank" style="margin-left:auto;white-space:nowrap;">
+                <button class="btn-primary" style="cursor:pointer;">Open in Figma →</button>
+            </a>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cs-cta">
+        <div class="cta-inner">
+            <div class="ey" style="justify-content:center;margin-bottom:28px;">Ready to see more?</div>
+            <h2 class="cta-title">Let's create<br>something <em>bold</em><br>together.</h2>
+            <button class="btn-primary" onclick="showPage('portfolio')">Back to Portfolio</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <span>Ayush <span>Nautiyal</span></span>
+        <span>© 2026 · HUZZ Case Study</span>
+    </footer>
+
+</div><!-- end page-huzz -->
+
+<script>
+  // Lazy load Figma iframes on click
+  function loadFigma(id, src) {
+    const wrap = document.getElementById(id);
+    wrap.innerHTML = '<iframe src="' + src + '" allowfullscreen style="display:block;width:100%;height:680px;border:none;"></iframe>';
+  }
+
+  // Cursor
+  const cur = document.getElementById('cur');
+  const ring = document.getElementById('cur-ring');
+  let mx=0, my=0, rx=0, ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+  (function tick() {
+    cur.style.left = mx+'px'; cur.style.top = my+'px';
+    rx += (mx-rx)*.1; ry += (my-ry)*.1;
+    ring.style.left = rx+'px'; ring.style.top = ry+'px';
+    requestAnimationFrame(tick);
+  })();
+
+  document.querySelectorAll('a,button,.prow').forEach(el => {
+    el.addEventListener('mouseenter', () => { cur.style.width='16px'; cur.style.height='16px'; ring.style.width='56px'; ring.style.height='56px'; });
+    el.addEventListener('mouseleave', () => { cur.style.width='10px'; cur.style.height='10px'; ring.style.width='38px'; ring.style.height='38px'; });
+  });
+
+  // Portfolio nav scroll effect
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('portfolio-nav');
+    if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // Hide case study navs on load (portfolio is default active)
+  const csNav = document.getElementById('cs-nav');
+  const awsNav = document.getElementById('aws-cs-nav');
+  const huzzNav = document.getElementById('huzz-cs-nav');
+  if (csNav) csNav.style.display = 'none';
+  if (awsNav) awsNav.style.display = 'none';
+  if (huzzNav) huzzNav.style.display = 'none';
+
+  // Page switching + smooth scroll
+  function showPage(name, scrollTo) {
+    const page = document.getElementById('page-' + name);
+    if (!page) return;
+    
+    const isAlreadyOnPage = page.classList.contains('active');
+
+    // Switch page
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    page.classList.add('active');
+
+    // Show/hide navs
+    const portfolioNav = document.getElementById('portfolio-nav');
+    const csNav = document.getElementById('cs-nav');
+    const awsNav = document.getElementById('aws-cs-nav');
+    const huzzNav = document.getElementById('huzz-cs-nav');
+    
+    if (portfolioNav) portfolioNav.style.display = name === 'portfolio' ? '' : 'none';
+    if (csNav) csNav.style.display = name === 'casestudy' ? '' : 'none';
+    if (awsNav) awsNav.style.display = name === 'aws' ? '' : 'none';
+    if (huzzNav) huzzNav.style.display = name === 'huzz' ? '' : 'none';
+
+    if (scrollTo) {
+      // If already on this page, scroll directly; otherwise wait for display to update
+      const delay = isAlreadyOnPage ? 0 : 80;
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      setTimeout(() => {
+        const el = document.getElementById(scrollTo);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, delay);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }
+</script>
+</body>
+</html>
